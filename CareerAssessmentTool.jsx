@@ -34,6 +34,15 @@ const MOCK_RECOMMENDATIONS = [
     { id: 101, title: "Data Scientist", match: "High", skills: ["Analytical Thinking", "Programming"] },
     { id: 102, title: "UX Designer", match: "Medium", skills: ["Creative Aptitude", "Problem-Solving"] },
     { id: 103, title: "HR Manager", match: "Low", skills: ["Interpersonal Skills", "Conflict Resolution"] },
+    { id: 104, title: "Software Engineer", match: "High", skills: ["Analytical Thinking", "Teamwork"] },
+    { id: 105, title: "Marketing Specialist", match: "Medium", skills: ["Interpersonal Skills", "Creativity"] },
+    { id: 106, title: "Graphic Designer", match: "High", skills: ["Creative Aptitude", "Attention to Detail"] },
+    { id: 107, title: "Business Analyst", match: "High", skills: ["Analytical Thinking", "Communication"] },
+    { id: 108, title: "Content Strategist", match: "Medium", skills: ["Creative Aptitude", "Writing"] },
+    { id: 109, title: "Project Manager", match: "Low", skills: ["Interpersonal Skills", "Organization"] },
+    { id: 110, title: "Cybersecurity Analyst", match: "High", skills: ["Analytical Thinking", "Problem-Solving"] },
+    { id: 111, title: "Social Media Manager", match: "Medium", skills: ["Interpersonal Skills", "Creativity"] },
+    { id: 112, title: "Illustrator", match: "High", skills: ["Creative Aptitude", "Attention to Detail"] },
 ];
 
 // --- 1. CONTEXT API ---
@@ -188,7 +197,7 @@ const Header = ({ navigate }) => {
                     )}
                 </nav>
 
-                {/* Mobile Menu (Responsive Design: UI/UX Design: 10 marks) */}
+                {/* Mobile Menu (Responsive Design) */}
                 <div className="md:hidden">
                     {isLoggedIn ? (
                         <Button variant="secondary" onClick={logout}>
@@ -208,70 +217,172 @@ const Header = ({ navigate }) => {
 
 // --- 4. PAGES/ROUTES ---
 
-// Fix: Pass `Maps` to LandingPage
-const LandingPage = ({ navigate }) => (
-    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-80px)]">
-        <div className="max-w-2xl bg-white p-8 rounded-xl shadow-2xl">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                Find Your Path with Career Compass
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-                Develop a platform that offers career assessments, personality tests, and skills evaluations.
-            </p>
-            {/* FIX: Use navigate for client-side routing */}
-            <Button onClick={() => navigate('/assessments')}>
-                Start Assessment Now
-            </Button>
-            <p className="mt-4 text-sm text-gray-500">
-                Sign in to save your progress and view personalized recommendations.
-            </p>
+const LandingPage = ({ navigate }) => {
+    const { isLoggedIn } = useAuth();
+
+    // If logged in, maybe show a personalized welcome, otherwise show the general info
+    if (isLoggedIn) {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-80px)]">
+                <div className="max-w-2xl bg-white p-10 rounded-xl shadow-2xl">
+                    <h2 className="text-4xl font-bold text-indigo-700 mb-4">
+                        Welcome Back!
+                    </h2>
+                    <p className="text-xl text-gray-600 mb-8">
+                        Ready to continue your career journey? Explore your latest results or start a new assessment.
+                    </p>
+                    <div className="flex justify-center space-x-4">
+                        <Button variant="primary" onClick={() => navigate('/assessments')}>
+                            View Assessments
+                        </Button>
+                        <Button variant="secondary" onClick={() => navigate('/results')}>
+                            View Results
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
+    return (
+        <div className="flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-80px)]">
+            <div className="max-w-3xl bg-white p-10 rounded-xl shadow-2xl">
+                <h2 className="text-5xl font-extrabold text-indigo-800 mb-6">
+                    🧭 Unlock Your Ideal Career Path
+                </h2>
+                <p className="text-xl text-gray-600 mb-8">
+                    Career Compass uses proprietary assessments to match your unique personality, skills, and interests with the perfect career opportunities of tomorrow.
+                    The job market is constantly evolving, driven by **technology, sustainability, and data**. Your personalized recommendations reflect the alignment between your unique psychological profile (Analytical, Creative, Interpersonal) and the **skills in highest demand**. We focus not just on current job titles, but on the core competencies that ensure long-term career resilience.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div className="p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-lg">
+                        <p className="font-bold text-lg text-indigo-700">🎯 Personalized Match</p>
+                        <p className="text-sm text-gray-500">Get career recommendations based on deep analysis.</p>
+                    </div>
+                    <div className="p-4 border-l-4 border-green-500 bg-green-50 rounded-lg">
+                        <p className="font-bold text-lg text-green-700">🧠 Skill Assessment</p>
+                        <p className="text-sm text-gray-500">Evaluate your current proficiency in key industry skills.</p>
+                    </div>
+                    <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-lg">
+                        <p className="font-bold text-lg text-yellow-700">📈 Future Growth</p>
+                        <p className="text-sm text-gray-500">Discover paths with high market demand and potential.</p>
+                    </div>
+                </div>
+
+                {/* The "Get Started" Button for Login */}
+                <Button 
+                    onClick={() => navigate('/login')}
+                    className="w-full sm:w-auto text-xl py-3 px-8 animate-pulse"
+                >
+                    Get Started & Sign Up/Login
+                </Button>
+                <p className="mt-4 text-sm text-gray-500">
+                    It only takes a minute to begin your journey.
+                </p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const LoginPage = ({ navigate }) => {
     const { login } = useAuth();
     const [selectedRole, setSelectedRole] = useState('student');
+    // NEW: Email and Password states
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState('');
 
     const handleLogin = () => {
-        login(selectedRole);
+        setLoginError('');
+        if (!email.trim() || !password.trim()) {
+            setLoginError('Please enter both email and password to proceed.');
+            return;
+        }
+
+        // Simulated login attempt
+        console.log(`Simulated login: Role=${selectedRole}, Email=${email}`);
+        
+        // Proceed with role-based login (simulated successful auth)
+        login(selectedRole); 
         navigate('/'); // Redirect after login
     };
 
     return (
         <div className="max-w-md mx-auto p-8 mt-10 bg-white rounded-xl shadow-lg">
-            <h2 className="text-3xl font-bold text-indigo-700 mb-6">Login / Select Role</h2>
+            <h2 className="text-3xl font-bold text-indigo-700 mb-6">Login</h2>
+
+            {loginError && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+                    {loginError}
+                </div>
+            )}
+
             <div className="space-y-4">
-                <div className="flex items-center">
+                {/* Email Input */}
+                <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                     <input
-                        type="radio"
-                        id="student"
-                        name="role"
-                        value="student"
-                        checked={selectedRole === 'student'}
-                        onChange={() => setSelectedRole('student')}
-                        className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your.email@example.com"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <label htmlFor="student" className="ml-3 block text-sm font-medium text-gray-700">
-                        Student (Take Assessments, View Results)
-                    </label>
                 </div>
-                <div className="flex items-center">
+                
+                {/* Password Input */}
+                <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <input
-                        type="radio"
-                        id="admin"
-                        name="role"
-                        value="admin"
-                        checked={selectedRole === 'admin'}
-                        onChange={() => setSelectedRole('admin')}
-                        className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="********"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <label htmlFor="admin" className="ml-3 block text-sm font-medium text-gray-700">
-                        Admin (Manage Assessment Tools)
-                    </label>
                 </div>
+                
+                <p className="text-sm font-medium text-gray-700 pt-2">Select Account Role (Simulation):</p>
+
+                {/* Role Selection */}
+                <div className="flex items-center space-x-6">
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="student"
+                            name="role"
+                            value="student"
+                            checked={selectedRole === 'student'}
+                            onChange={() => setSelectedRole('student')}
+                            className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                        />
+                        <label htmlFor="student" className="ml-3 block text-sm font-medium text-gray-700">
+                            Student
+                        </label>
+                    </div>
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="admin"
+                            name="role"
+                            value="admin"
+                            checked={selectedRole === 'admin'}
+                            onChange={() => setSelectedRole('admin')}
+                            className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-gray-500"
+                        />
+                        <label htmlFor="admin" className="ml-3 block text-sm font-medium text-gray-700">
+                            Admin
+                        </label>
+                    </div>
+                </div>
+
                 <Button onClick={handleLogin} className="w-full mt-6">
-                    Sign In as {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
+                    Sign In
                 </Button>
             </div>
         </div>
@@ -298,7 +409,8 @@ const AssessmentQuiz = ({ navigate }) => {
         if (isLastQuestion) {
             // Simulate submission
             console.log("Quiz Submitted with answers:", answers);
-            alert("Assessment complete! Redirecting to results.");
+            // Replace alert with console log and direct navigation
+            console.log("Assessment complete! Redirecting to results.");
             navigate('/results'); // Navigate to results after submission
         } else {
             setCurrentQuestionIndex(prev => prev + 1);
